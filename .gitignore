@@ -1,0 +1,22 @@
+# 環境変数ファイル
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# node_modules（将来的に使用する場合）
+node_modules/
+
+# ログ
+*.log
+npm-debug.log*
