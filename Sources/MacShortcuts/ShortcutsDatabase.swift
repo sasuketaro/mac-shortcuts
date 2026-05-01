@@ -1,35 +1,42 @@
+// ─────────────────────────────────────────────
+// ShortcutsDatabase.swift
+// 各アプリのショートカット一覧データを持つクラス。
+// アプリのバンドルID（例: com.apple.Safari）や名前で
+// どのアプリかを判定し、対応するショートカット一覧を返す。
+// ─────────────────────────────────────────────
 import AppKit
 
 class ShortcutsDatabase {
+    // アプリ内でただ一つのインスタンスを共有する（シングルトン）
     static let shared = ShortcutsDatabase()
-
     private init() {}
 
+    // ─── アプリに対応するショートカット一覧を返す ───
+    // bundleIdentifier : アプリの一意なID（例: "com.apple.Safari"）
+    // localizedName    : アプリの表示名（例: "Safari"）
     func shortcuts(for app: NSRunningApplication) -> [ShortcutGroup] {
-        let id = app.bundleIdentifier?.lowercased() ?? ""
-        let name = app.localizedName?.lowercased() ?? ""
+        // lowercased() : 大文字・小文字の違いを無視するために小文字に統一する
+        let id   = app.bundleIdentifier?.lowercased() ?? ""
+        let name = app.localizedName?.lowercased()    ?? ""
 
+        // switch true + case : 複数条件を順番に判定する（最初に一致したものが採用される）
         switch true {
-        case id.contains("safari") || name == "safari":
-            return safari
-        case id.contains("chrome") || name.contains("chrome"):
-            return chrome
-        case id.contains("firefox") || name.contains("firefox"):
-            return firefox
-        case id.contains("terminal") || name == "terminal":
-            return terminal
-        case id.contains("vscode") || name.contains("visual studio code") || name == "code":
-            return vscode
-        case id.contains("finder") || name == "finder":
-            return finder
-        case id.contains("slack") || name == "slack":
-            return slack
-        case id.contains("xcode") || name == "xcode":
-            return xcode
-        default:
-            return generic
+        case id.contains("safari")  || name == "safari":             return safari
+        case id.contains("chrome")  || name.contains("chrome"):      return chrome
+        case id.contains("firefox") || name.contains("firefox"):     return firefox
+        case id.contains("terminal") || name == "terminal":           return terminal
+        case id.contains("vscode")  || name.contains("visual studio code") || name == "code":
+                                                                     return vscode
+        case id.contains("finder")  || name == "finder":             return finder
+        case id.contains("slack")   || name == "slack":              return slack
+        case id.contains("xcode")   || name == "xcode":              return xcode
+        default:                                                      return generic
         }
     }
+
+    // ─── 以下、各アプリのショートカットデータ ───
+    // private : このクラス内からしかアクセスできない
+    // var ... { [...] } : 計算プロパティ。呼ばれるたびに値を返す
 
     // MARK: Safari
     private var safari: [ShortcutGroup] { [
@@ -285,7 +292,7 @@ class ShortcutsDatabase {
         ]),
     ] }
 
-    // MARK: Generic
+    // MARK: Generic（未対応アプリへのフォールバック）
     private var generic: [ShortcutGroup] { [
         ShortcutGroup(category: "スクロール", shortcuts: [
             Shortcut(command: "Space",   description: "下スクロール"),
